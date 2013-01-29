@@ -21,8 +21,8 @@
 package org.semanticscience.PDBAptamerRetriever.lib;
 
 /**
- * @author  Jose Cruz-Toledo
- *
+ * @author Jose Cruz-Toledo
+ * 
  */
 public class Ligand {
 	private String pdbId = null;
@@ -34,16 +34,26 @@ public class Ligand {
 	private String inchiKey = null;
 	private String inchi = null;
 	private String smiles = null;
+
 	/**
-	 * @param pdbId the pdb id
-	 * @param chemicalId the chemical identifier provided by ligandexpo
-	 * @param type the mmCIF type
-	 * @param molecularWeight molecular weigth
-	 * @param chemicalName a chemical name
-	 * @param formula the chemical formula
-	 * @param inchiKey inchikey string
-	 * @param inchi the inchi string
-	 * @param smiles a smiles string
+	 * @param pdbId
+	 *            the pdb id
+	 * @param chemicalId
+	 *            the chemical identifier provided by ligandexpo
+	 * @param type
+	 *            the mmCIF type
+	 * @param molecularWeight
+	 *            molecular weigth
+	 * @param chemicalName
+	 *            a chemical name
+	 * @param formula
+	 *            the chemical formula
+	 * @param inchiKey
+	 *            inchikey string
+	 * @param inchi
+	 *            the inchi string
+	 * @param smiles
+	 *            a smiles string
 	 */
 	public Ligand(String pdbId, String chemicalId, String type,
 			Double molecularWeight, String chemicalName, String formula,
@@ -59,117 +69,158 @@ public class Ligand {
 		this.inchi = inchi;
 		this.smiles = smiles;
 	}
-	
+	public String getCSVHeader(){
+		String b ="";
+		b += "PDBID,CHEMICAL ID, CHEMICAL NAME, TYPE, MW,FORMULA,INCHI,INCHIKEY,SMILES\n";
+		return b;
+	}
+	public String getCSVLine() {
+		String b = "";
+		b += getPdbId() + "," + getChemicalId() + ",\""
+				+ getChemicalName().replaceAll(",", "") + "\"," + getType()
+				+","+getMolecularWeight()+","+getFormula()+","+getInchi()
+				+","+getInchiKey()+","+getSmiles()+"\n";
+		return b;
+	}
+
 	/**
 	 * @return the pdbId
 	 */
 	public String getPdbId() {
 		return pdbId;
 	}
+
 	/**
-	 * @param pdbId the pdbId to set
+	 * @param pdbId
+	 *            the pdbId to set
 	 */
 	private void setPdbId(String pdbId) {
 		this.pdbId = pdbId;
 	}
+
 	/**
 	 * @return the chemicalId
 	 */
 	public String getChemicalId() {
 		return chemicalId;
 	}
+
 	/**
-	 * @param chemicalId the chemicalId to set
+	 * @param chemicalId
+	 *            the chemicalId to set
 	 */
 	private void setChemicalId(String chemicalId) {
 		this.chemicalId = chemicalId;
 	}
+
 	/**
 	 * @return the type
 	 */
 	public String getType() {
 		return type;
 	}
+
 	/**
-	 * @param type the type to set
+	 * @param type
+	 *            the type to set
 	 */
 	private void setType(String type) {
 		this.type = type;
 	}
+
 	/**
 	 * @return the molecularWeight
 	 */
 	public Double getMolecularWeight() {
 		return molecularWeight;
 	}
+
 	/**
-	 * @param molecularWeight the molecularWeight to set
+	 * @param molecularWeight
+	 *            the molecularWeight to set
 	 */
 	private void setMolecularWeight(Double molecularWeight) {
 		this.molecularWeight = molecularWeight;
 	}
+
 	/**
 	 * @return the chemicalName
 	 */
 	public String getChemicalName() {
 		return chemicalName;
 	}
+
 	/**
-	 * @param chemicalName the chemicalName to set
+	 * @param chemicalName
+	 *            the chemicalName to set
 	 */
 	private void setChemicalName(String chemicalName) {
 		this.chemicalName = chemicalName;
 	}
+
 	/**
 	 * @return the formula
 	 */
 	public String getFormula() {
 		return formula;
 	}
+
 	/**
-	 * @param formula the formula to set
+	 * @param formula
+	 *            the formula to set
 	 */
 	private void setFormula(String formula) {
 		this.formula = formula;
 	}
+
 	/**
 	 * @return the inchiKey
 	 */
 	public String getInchiKey() {
 		return inchiKey;
 	}
+
 	/**
-	 * @param inchiKey the inchiKey to set
+	 * @param inchiKey
+	 *            the inchiKey to set
 	 */
 	private void setInchiKey(String inchiKey) {
 		this.inchiKey = inchiKey;
 	}
+
 	/**
 	 * @return the inchi
 	 */
 	public String getInchi() {
 		return inchi;
 	}
+
 	/**
-	 * @param inchi the inchi to set
+	 * @param inchi
+	 *            the inchi to set
 	 */
 	private void setInchi(String inchi) {
 		this.inchi = inchi;
 	}
+
 	/**
 	 * @return the smiles
 	 */
 	public String getSmiles() {
 		return smiles;
 	}
+
 	/**
-	 * @param smiles the smiles to set
+	 * @param smiles
+	 *            the smiles to set
 	 */
 	private void setSmiles(String smiles) {
 		this.smiles = smiles;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -180,7 +231,5 @@ public class Ligand {
 				+ ", inchiKey=" + inchiKey + ", inchi=" + inchi + ", smiles="
 				+ smiles + "]";
 	}
-	
-	
 
 }

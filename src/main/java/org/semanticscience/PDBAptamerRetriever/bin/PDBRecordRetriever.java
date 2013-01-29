@@ -20,37 +20,60 @@
  */
 package org.semanticscience.PDBAptamerRetriever.bin;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
+import org.semanticscience.PDBAptamerRetriever.lib.Ligand;
+import org.semanticscience.PDBAptamerRetriever.lib.PDBRecord;
 
 /**
  * @author  Jose Cruz-Toledo
  *
  */
-public class PDBAptamerRetrieverTest {
-	private static PDBAptamerIDRetriever par;
-	@BeforeClass
-	public static void setupBeforeClass(){
-		par = new PDBAptamerIDRetriever("DNA", "all");
-	}
-	@AfterClass
-	public static void tearDownAfterClass(){
-		par = null;
-	}
-	@Test
-	public void test() {
-		System.out.println(par.getQuery());
-		System.out.println(par.getPdbids());
-		try {
-			System.out.println(par.retrievePDB(new File("/tmp/pico")));
-		} catch (Exception e) {
-			e.printStackTrace();
+public class PDBRecordRetriever {
+
+	private List<String> pdbIds = null;
+	private List<PDBRecord> records =null;
+	private File csvDescription = null;
+	public PDBRecordRetriever(List<String> aPdbids){
+		pdbIds = aPdbids;
+		//load the records
+		records = new ArrayList<PDBRecord>();
+		Iterator<String> itr = pdbIds.iterator();
+		while(itr.hasNext()){
+			String anId = itr.next();
+			PDBRecord p = new PDBRecord(anId);
+			records.add(p);
 		}
 	}
-
+	
+	 
+	public String getCSVString(){
+		Iterator<PDBRecord> itr = records.iterator();
+		String b = "";
+		while(itr.hasNext()){
+			PDBRecord p = itr.next();
+			b+= p.getCSVLine();
+		}
+		return b;
+	}
+	
+	public String getLigandCSVReport(){
+		String rm = "";
+		Iterator<PDBRecord> itr = records.iterator();
+		while(itr.hasNext()){
+			PDBRecord p =  itr.next();
+			//get the ligands for this record
+			Iterator<Ligand> litr = p.getLigands().iterator();
+			while(litr.hasNext()){
+				Ligand l = litr.next();
+				rm += l.getCSVLine();
+			}
+		}
+		return rm;
+	}
+	
 }

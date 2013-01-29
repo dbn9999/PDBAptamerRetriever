@@ -32,8 +32,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
-import org.semanticscience.PDBAptamerRetriever.bin.PDBAptamerRetriever;
-import org.semanticscience.PDBAptamerRetriever.lib.PDBRecordRetriever;
+import org.semanticscience.PDBAptamerRetriever.bin.PDBAptamerIDRetriever;
+import org.semanticscience.PDBAptamerRetriever.bin.PDBRecordRetriever;
 
 /**
  * @author Jose Cruz-Toledo
@@ -43,13 +43,12 @@ public class RetrieveAptamers {
 	public static void main(String[] args) {
 		Options options = createOptions();
 		CommandLineParser parser = createCliParser();
-
 		String expMeth = null;
 		String molT = null;
 		boolean concatFasta = false;
 		File fastaDir = null;
 		File pdbDir = null;
-
+		boolean ligandReport = false;
 		try {
 			CommandLine cmd = parser.parse(options, args);
 			if (cmd.hasOption("help")) {
@@ -83,16 +82,25 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("concatenateFasta")) {
 				concatFasta = true;
 			}
+			if(cmd.hasOption("ligandReport")){
+				ligandReport = true;
+			}
 			if (cmd.hasOption("pdbDir")) {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
 			}
-			PDBAptamerRetriever par = new PDBAptamerRetriever(molT, expMeth);
+			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
 			System.out.println("Retrieving Data from PDB ...");
 			PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
 			//now write the CSV file
-			File csv = new File("csvOutput.csv");
+			File csv = new File("summary.csv");
 			FileUtils.writeStringToFile(csv, prr.getCSVString());
 			// verify the options
+			if(ligandReport){
+				//create the ligand report
+				File lr = new File("ligand-report.csv");
+				String ligRep = prr.getLigandCSVReport();
+				FileUtils.writeStringToFile(lr, ligRep);
+			}
 			if (fastaDir != null) {
 				try {
 					boolean b = par.retrieveFasta(fastaDir, concatFasta);
@@ -164,13 +172,19 @@ public class RetrieveAptamers {
 				.withDescription(
 						"The directory where you wish to save your PDB files")
 				.create("pdbDir");
-
+		Option ligandReport = OptionBuilder
+				.withArgName("ligandReport")
+				.hasArg(false)
+				.withDescription("Add this parameter to generate a ligand report")
+				.create("ligandReport");
+		
 		o.addOption(help);
 		o.addOption(expMethod);
 		o.addOption(moleculeType);
 		o.addOption(outputFastaDir);
 		o.addOption(concatenateFASTA);
 		o.addOption(outputPDBDir);
+		o.addOption(ligandReport);
 		return o;
 	}
 
