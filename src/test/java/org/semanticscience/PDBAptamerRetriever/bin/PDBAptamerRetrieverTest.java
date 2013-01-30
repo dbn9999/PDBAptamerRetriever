@@ -36,7 +36,7 @@ public class PDBAptamerRetrieverTest {
 	private static PDBAptamerIDRetriever par;
 	@BeforeClass
 	public static void setupBeforeClass(){
-		par = new PDBAptamerIDRetriever("DNA", "all");
+		par = new PDBAptamerIDRetriever("BOTH", "all");
 	}
 	@AfterClass
 	public static void tearDownAfterClass(){

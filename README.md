@@ -3,7 +3,7 @@ Retrieve information about aptamers and riboswitches as stored in the PDB. This 
 #Getting Started
 You will need to have maven2 installed. 
 Create a runnable jar by executing
-$mvn assembly:single
+$mvn assembly:assembly
 
 Inside of the target directory you will find a jar file:
 PDBAptamerRetriever-0.0.4-jar-with-dependencies.jar

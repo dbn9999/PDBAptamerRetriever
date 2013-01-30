@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,8 +32,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.semanticscience.PDBAptamerRetriever.lib.PDBRestQueryer;
 
-//TODO: deal with riboswitches
 /**
+ * Use PDB's REST interface to retrieve PDBids for aptamers AND riboswitches
+ * 
  * @author Jose Cruz-Toledo
  * 
  */
@@ -47,7 +47,7 @@ public class PDBAptamerIDRetriever {
 	private String experimentalType;
 	// if true find structures with ligands
 	private boolean hasLigands = false;
-	private String keyword = "aptamer";
+	private String keywords = "aptamer or riboswitch";
 	// The PDBids
 	private List<String> pdbids;
 	// the directory where to place the resulting pdb files
@@ -81,7 +81,7 @@ public class PDBAptamerIDRetriever {
 		experimentalType = anExpType;
 		hasLigands = aHasLigands;
 		query = constructXMLQuery(anAptamerType, anExpType, aHasLigands,
-				keyword);
+				keywords);
 		prq = new PDBRestQueryer(query);
 		pdbids = prq.getPdbIds();
 	}
@@ -91,9 +91,9 @@ public class PDBAptamerIDRetriever {
 		aptamerType = anAptamerType;
 		experimentalType = anExpType;
 		hasLigands = aHasLigands;
-		keyword = aKeyword;
+		keywords = aKeyword;
 		query = constructXMLQuery(anAptamerType, anExpType, aHasLigands,
-				keyword);
+				keywords);
 		prq = new PDBRestQueryer(query);
 		pdbids = prq.getPdbIds();
 	}
@@ -105,7 +105,8 @@ public class PDBAptamerIDRetriever {
 	 * @param aDirectory
 	 *            the directory where the PDB files will be stored
 	 * @return false if something did not work :)
-	 * @throws Exception if output directory is not empty
+	 * @throws Exception
+	 *             if output directory is not empty
 	 */
 	public boolean retrievePDB(File aDirectory) throws Exception {
 		int checkCount = 0;
@@ -142,14 +143,16 @@ public class PDBAptamerIDRetriever {
 						}
 					}
 				}
-			}else{
-				throw new Exception("PDB output directory : "+aDirectory.getAbsolutePath()+" is not empty!\nPlease provide an empty directory!");
-			
+			} else {
+				throw new Exception("PDB output directory : "
+						+ aDirectory.getAbsolutePath()
+						+ " is not empty!\nPlease provide an empty directory!");
+
 			}
 		} else {
 			return false;
 		}
-		if(checkCount > 0){
+		if (checkCount > 0) {
 			return true;
 		}
 		return false;
@@ -165,7 +168,8 @@ public class PDBAptamerIDRetriever {
 	 *            if true only one file will be placed in aDirectory with all
 	 *            fasta entries
 	 * @return false if something did not work right :)
-	 * @throws Exception if output directory is not empty
+	 * @throws Exception
+	 *             if output directory is not empty
 	 */
 	public boolean retrieveFasta(File aDirectory, boolean concatenate)
 			throws Exception {
@@ -232,7 +236,7 @@ public class PDBAptamerIDRetriever {
 		String buf = "";
 		String at = makeChainTypeQuery(anAptamerType);
 		String et = makeExperimentalMethodQuery(anExpType);
-		String kw = makeKeywordQuery(getKeyword());
+		String kw = makeKeywordQuery(getKeywords());
 		buf += "<orgPdbCompositeQuery>";
 		if (at != null) {
 			buf += "<queryRefinement>";
@@ -377,10 +381,10 @@ public class PDBAptamerIDRetriever {
 	}
 
 	/**
-	 * @return the keyword
+	 * @return the keywords
 	 */
-	public String getKeyword() {
-		return keyword;
+	public String getKeywords() {
+		return keywords;
 	}
 
 	/**
@@ -388,7 +392,7 @@ public class PDBAptamerIDRetriever {
 	 *            the keyword to set
 	 */
 	private void setKeyword(String keyword) {
-		this.keyword = keyword;
+		this.keywords = keyword;
 	}
 
 	/**

@@ -91,46 +91,55 @@ public class RetrieveAptamers {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
 			}
 			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
-			System.out.println("Retrieving Data from PDB ...");
-			PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
-			// now write the CSV file
-			File csv = new File("summary.csv");
-			FileUtils.writeStringToFile(csv, prr.getCSVString());
-			System.out.println("summary.csv successfully created!");
-			// verify the options
-			if (ligandReport) {
-				// create the ligand report
-				File lr = new File("ligand-report.csv");
-				String ligRep = prr.getLigandCSVReport();
-				FileUtils.writeStringToFile(lr, ligRep);
-				System.out.println("ligand-report.csv successfully created!");
-			}
-			if (fastaDir != null) {
-				try {
-					boolean b = par.retrieveFasta(fastaDir, concatFasta);
-					if (b) {
-						System.out
-								.println("FASTA files downloaded successfully!");
-					} else {
-						System.out
-								.println("FASTA files could not be downloaded");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			
+			if (par.getPdbids().size() > 0) {
+				System.out.println("Fetching Data from PDB ...");
+				PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
+				// now write the CSV file
+				File csv = new File("summary.csv");
+				FileUtils.writeStringToFile(csv, prr.getCSVString());
+				System.out.println("summary.csv successfully created!");
+				// verify the options
+				if (ligandReport) {
+					// create the ligand report
+					File lr = new File("ligand-report.csv");
+					String ligRep = prr.getLigandCSVReport();
+					FileUtils.writeStringToFile(lr, ligRep);
+					System.out
+							.println("ligand-report.csv successfully created!");
 				}
-			}
-			if (pdbDir != null) {
-				try {
-					boolean b = par.retrievePDB(pdbDir);
-					if (b) {
-						System.out
-								.println("PDB files downloaded successfully!");
-					} else {
-						System.out.println("PDB files could not be downloaded");
+				if (fastaDir != null) {
+					try {
+						boolean b = par.retrieveFasta(fastaDir, concatFasta);
+						if (b) {
+							System.out
+									.println("FASTA files downloaded successfully!");
+						} else {
+							System.out
+									.println("FASTA files could not be downloaded");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
+				if (pdbDir != null) {
+					try {
+						boolean b = par.retrievePDB(pdbDir);
+						if (b) {
+							System.out
+									.println("PDB files downloaded successfully!");
+						} else {
+							System.out
+									.println("PDB files could not be downloaded");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}//if pdbids found
+			else{
+				System.out.println("No PDB records found!");
+				System.exit(1);
 			}
 		} catch (ParseException e) {
 			System.out.println("Unable to parse specified options!");
@@ -139,6 +148,7 @@ public class RetrieveAptamers {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	@SuppressWarnings("static-access")
@@ -199,10 +209,12 @@ public class RetrieveAptamers {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
 			private final String OPTS_ORDER = "helpemmtcflrfastaDirpdbDir";
+
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;
 				Option opt2 = (Option) o2;
-				return OPTS_ORDER.indexOf(opt1.getOpt()) - OPTS_ORDER.indexOf(opt2.getOpt());
+				return OPTS_ORDER.indexOf(opt1.getOpt())
+						- OPTS_ORDER.indexOf(opt2.getOpt());
 			}
 		});
 		hf.printHelp("java -jar RetrieveAptamers.jar [OPTIONS]",
