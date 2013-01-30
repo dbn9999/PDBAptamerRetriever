@@ -71,15 +71,14 @@ public class Ligand {
 	}
 	public String getCSVHeader(){
 		String b ="";
-		b += "PDBID,CHEMICAL ID, CHEMICAL NAME, TYPE, MW,FORMULA,INCHI,INCHIKEY,SMILES\n";
+		b += "PDBID\tCHEMICAL ID\tCHEMICAL NAME\tTYPE\tMW\tFORMULA\tINCHI\tINCHIKEY\tSMILES\n";
 		return b;
 	}
 	public String getCSVLine() {
 		String b = "";
-		b += getPdbId() + "," + getChemicalId() + ",\""
-				+ getChemicalName().replaceAll(",", "") + "\"," + getType()
-				+","+getMolecularWeight()+","+getFormula()+","+getInchi()
-				+","+getInchiKey()+","+getSmiles()+"\n";
+		b += getPdbId() + "\t" + getChemicalId() + "\t"
+				+ getChemicalName().replaceAll(",", "") + "\t" + getType()
+				+"\t"+getMolecularWeight()+"\t"+getFormula()+"\t"+getSmiles()+"\n";
 		return b;
 	}
 

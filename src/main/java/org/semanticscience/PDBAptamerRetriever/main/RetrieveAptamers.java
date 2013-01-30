@@ -22,6 +22,7 @@ package org.semanticscience.PDBAptamerRetriever.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -34,6 +35,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.semanticscience.PDBAptamerRetriever.bin.PDBAptamerIDRetriever;
 import org.semanticscience.PDBAptamerRetriever.bin.PDBRecordRetriever;
+import org.semanticscience.PDBAptamerRetriever.shared.OptionComparator;
 
 /**
  * @author Jose Cruz-Toledo
@@ -55,20 +57,20 @@ public class RetrieveAptamers {
 				printUsage();
 				System.exit(1);
 			}
-			if (cmd.hasOption("expMethod")) {
+			if (cmd.hasOption("em")) {
 				// validate mehtod
-				if (validateExpMethod(cmd.getOptionValue("expMethod"))) {
-					expMeth = cmd.getOptionValue("expMethod");
+				if (validateExpMethod(cmd.getOptionValue("em"))) {
+					expMeth = cmd.getOptionValue("em");
 				} else {
 					System.out.println("Invalid experimental method entered!");
 					printUsage();
 					System.exit(1);
 				}
 			}
-			if (cmd.hasOption("molType")) {
+			if (cmd.hasOption("mt")) {
 				// validate moltype
-				if (validateMolType(cmd.getOptionValue("molType"))) {
-					molT = cmd.getOptionValue("molType");
+				if (validateMolType(cmd.getOptionValue("mt"))) {
+					molT = cmd.getOptionValue("mt");
 				} else {
 					System.out.println("Invalid molecule type!");
 					printUsage();
@@ -79,10 +81,10 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("fastaDir")) {
 				fastaDir = new File(cmd.getOptionValue("fastaDir"));
 			}
-			if (cmd.hasOption("concatenateFasta")) {
+			if (cmd.hasOption("cf")) {
 				concatFasta = true;
 			}
-			if(cmd.hasOption("ligandReport")){
+			if (cmd.hasOption("lr")) {
 				ligandReport = true;
 			}
 			if (cmd.hasOption("pdbDir")) {
@@ -91,15 +93,17 @@ public class RetrieveAptamers {
 			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
 			System.out.println("Retrieving Data from PDB ...");
 			PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
-			//now write the CSV file
+			// now write the CSV file
 			File csv = new File("summary.csv");
 			FileUtils.writeStringToFile(csv, prr.getCSVString());
+			System.out.println("summary.csv successfully created!");
 			// verify the options
-			if(ligandReport){
-				//create the ligand report
+			if (ligandReport) {
+				// create the ligand report
 				File lr = new File("ligand-report.csv");
 				String ligRep = prr.getLigandCSVReport();
 				FileUtils.writeStringToFile(lr, ligRep);
+				System.out.println("ligand-report.csv successfully created!");
 			}
 			if (fastaDir != null) {
 				try {
@@ -143,17 +147,17 @@ public class RetrieveAptamers {
 		// help option
 		Option help = new Option("help", false, "Print this message");
 		Option expMethod = OptionBuilder
-				.withArgName("expMethod")
+				.withArgName("X-RAY")
 				.hasArg(true)
 				.withDescription(
 						"Enter an expeirmental method. Valid options are X-RAY, NMR or all")
-				.isRequired().create("expMethod");
+				.isRequired().create("em");
 		Option moleculeType = OptionBuilder
-				.withArgName("molType")
+				.withArgName("RNA")
 				.hasArg(true)
 				.withDescription(
 						"Enter a molecule type. Valid options are DNA, RNA or BOTH")
-				.isRequired().create("molType");
+				.isRequired().create("mt");
 		Option outputFastaDir = OptionBuilder
 				.withArgName("fastaDir")
 				.hasArg(true)
@@ -161,23 +165,21 @@ public class RetrieveAptamers {
 						"The directory where you wish to save your FASTA files")
 				.create("fastaDir");
 		Option concatenateFASTA = OptionBuilder
-				.withArgName("concatenateFasta")
 				.hasArg(false)
 				.withDescription(
-						"Add this parameter if you want all of your FASTA files to be downloaded into one file")
-				.create("concatenateFasta");
+						"Add this parameter if you want all of your FASTA files to be downloaded into a single file")
+				.create("cf");
 		Option outputPDBDir = OptionBuilder
-				.withArgName("pdbDir")
+				.withArgName("/path/to/local/dir")
 				.hasArg(true)
 				.withDescription(
 						"The directory where you wish to save your PDB files")
 				.create("pdbDir");
 		Option ligandReport = OptionBuilder
-				.withArgName("ligandReport")
 				.hasArg(false)
-				.withDescription("Add this parameter to generate a ligand report")
-				.create("ligandReport");
-		
+				.withDescription("Add this parameter to create a ligand report")
+				.create("lr");
+
 		o.addOption(help);
 		o.addOption(expMethod);
 		o.addOption(moleculeType);
@@ -185,6 +187,7 @@ public class RetrieveAptamers {
 		o.addOption(concatenateFASTA);
 		o.addOption(outputPDBDir);
 		o.addOption(ligandReport);
+
 		return o;
 	}
 
@@ -194,6 +197,14 @@ public class RetrieveAptamers {
 
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
+		hf.setOptionComparator(new Comparator() {
+			private final String OPTS_ORDER = "helpemmtcflrfastaDirpdbDir";
+			public int compare(Object o1, Object o2) {
+				Option opt1 = (Option) o1;
+				Option opt2 = (Option) o2;
+				return OPTS_ORDER.indexOf(opt1.getOpt()) - OPTS_ORDER.indexOf(opt2.getOpt());
+			}
+		});
 		hf.printHelp("java -jar RetrieveAptamers.jar [OPTIONS]",
 				createOptions());
 	}
