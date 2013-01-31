@@ -22,8 +22,10 @@ package org.semanticscience.PDBAptamerRetriever.bin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.semanticscience.PDBAptamerRetriever.lib.Ligand;
@@ -75,5 +77,38 @@ public class PDBRecordRetriever {
 		}
 		return rm;
 	}
+	
+	
+	private Map<Ligand, Integer> computeLigandFrequencies(List<PDBRecord> aList){
+		Map<Ligand, Integer> rm = new HashMap<Ligand, Integer>();
+		Iterator<PDBRecord> itr = aList.iterator();
+		while(itr.hasNext()){
+			PDBRecord pdbr = itr.next();
+			List<Ligand> ligs = pdbr.getLigands();
+			Iterator<Ligand> itr2 = ligs.iterator();
+			while(itr2.hasNext()){
+				Ligand l = itr2.next();
+				if(rm.containsKey(l)){
+					rm.put(l, rm.get(l) +1);
+				}else{
+					rm.put(l, 1);
+				}
+			}
+		}
+		return rm;
+	}
+	
+	public String getLigandFrequenciesCSV(){
+		String rm = "";
+		Map<Ligand, Integer> freqs = this.computeLigandFrequencies(this.records);
+		for (Map.Entry<Ligand, Integer> entry : freqs.entrySet()) {
+		    Ligand l = entry.getKey();
+		    Integer count = entry.getValue();
+		    rm += l.getChemicalId()+"\t"+count+"\n";
+		}
+		return rm;
+	}
+	
+	
 	
 }

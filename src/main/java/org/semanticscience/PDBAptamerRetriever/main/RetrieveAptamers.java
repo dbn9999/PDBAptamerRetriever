@@ -51,6 +51,7 @@ public class RetrieveAptamers {
 		File fastaDir = null;
 		File pdbDir = null;
 		boolean ligandReport = false;
+		boolean ligandFreqs = false;
 		try {
 			CommandLine cmd = parser.parse(options, args);
 			if (cmd.hasOption("help")) {
@@ -87,6 +88,9 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("lr")) {
 				ligandReport = true;
 			}
+			if(cmd.hasOption("lf")){
+				ligandFreqs = true;
+			}
 			if (cmd.hasOption("pdbDir")) {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
 			}
@@ -107,6 +111,12 @@ public class RetrieveAptamers {
 					FileUtils.writeStringToFile(lr, ligRep);
 					System.out
 							.println("ligand-report.csv successfully created!");
+				}
+				if(ligandFreqs){
+					File lf = new File("ligand-freqs.csv");
+					String ligCounts = prr.getLigandFrequenciesCSV();
+					FileUtils.writeStringToFile(lf, ligCounts);
+					System.out.println("ligand-freqs.csv succesffuly created!");
 				}
 				if (fastaDir != null) {
 					try {
@@ -169,7 +179,7 @@ public class RetrieveAptamers {
 						"Enter a molecule type. Valid options are DNA, RNA or BOTH")
 				.isRequired().create("mt");
 		Option outputFastaDir = OptionBuilder
-				.withArgName("fastaDir")
+				.withArgName("/path/to/local/dir")
 				.hasArg(true)
 				.withDescription(
 						"The directory where you wish to save your FASTA files")
@@ -189,6 +199,10 @@ public class RetrieveAptamers {
 				.hasArg(false)
 				.withDescription("Add this parameter to create a ligand report")
 				.create("lr");
+		Option ligandFreqs = OptionBuilder
+				.hasArg(false)
+				.withDescription("Add this parameter to compute ligand counts")
+				.create("lf");
 
 		o.addOption(help);
 		o.addOption(expMethod);
@@ -197,7 +211,7 @@ public class RetrieveAptamers {
 		o.addOption(concatenateFASTA);
 		o.addOption(outputPDBDir);
 		o.addOption(ligandReport);
-
+		o.addOption(ligandFreqs);
 		return o;
 	}
 
@@ -208,7 +222,7 @@ public class RetrieveAptamers {
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
-			private final String OPTS_ORDER = "helpemmtcflrfastaDirpdbDir";
+			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDir";
 
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;

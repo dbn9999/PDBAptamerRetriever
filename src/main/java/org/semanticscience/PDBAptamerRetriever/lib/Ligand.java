@@ -231,4 +231,61 @@ public class Ligand {
 				+ smiles + "]";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Ligand other = (Ligand) obj;
+		if (chemicalId == null) {
+			if (other.chemicalId != null)
+				return false;
+		} else if (!chemicalId.equals(other.chemicalId))
+			return false;
+		if (chemicalName == null) {
+			if (other.chemicalName != null)
+				return false;
+		} else if (!chemicalName.equals(other.chemicalName))
+			return false;
+		if (formula == null) {
+			if (other.formula != null)
+				return false;
+		} else if (!formula.equals(other.formula))
+			return false;
+		if (inchi == null) {
+			if (other.inchi != null)
+				return false;
+		} else if (!inchi.equals(other.inchi))
+			return false;
+		if (inchiKey == null) {
+			if (other.inchiKey != null)
+				return false;
+		} else if (!inchiKey.equals(other.inchiKey))
+			return false;
+		if (molecularWeight == null) {
+			if (other.molecularWeight != null)
+				return false;
+		} else if (!molecularWeight.equals(other.molecularWeight))
+			return false;
+		if (pdbId == null) {
+			if (other.pdbId != null)
+				return false;
+		} else if (!pdbId.equals(other.pdbId))
+			return false;
+		if (smiles == null) {
+			if (other.smiles != null)
+				return false;
+		} else if (!smiles.equals(other.smiles))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
+
 }
