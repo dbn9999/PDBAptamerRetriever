@@ -357,13 +357,6 @@ public class PDBAptamerIDRetriever {
 		return experimentalType;
 	}
 
-	/**
-	 * @param experimentalType
-	 *            the experimentalType to set
-	 */
-	private void setExperimentalType(String experimentalType) {
-		this.experimentalType = experimentalType;
-	}
 
 	/**
 	 * @return the hasLigands

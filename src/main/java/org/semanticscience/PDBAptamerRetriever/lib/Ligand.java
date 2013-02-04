@@ -216,10 +216,7 @@ public class Ligand {
 	private void setSmiles(String smiles) {
 		this.smiles = smiles;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -230,11 +227,27 @@ public class Ligand {
 				+ ", inchiKey=" + inchiKey + ", inchi=" + inchi + ", smiles="
 				+ smiles + "]";
 	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((chemicalId == null) ? 0 : chemicalId.hashCode());
+		result = prime * result
+				+ ((chemicalName == null) ? 0 : chemicalName.hashCode());
+		result = prime * result + ((formula == null) ? 0 : formula.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
+		
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
@@ -255,31 +268,6 @@ public class Ligand {
 				return false;
 		} else if (!formula.equals(other.formula))
 			return false;
-		if (inchi == null) {
-			if (other.inchi != null)
-				return false;
-		} else if (!inchi.equals(other.inchi))
-			return false;
-		if (inchiKey == null) {
-			if (other.inchiKey != null)
-				return false;
-		} else if (!inchiKey.equals(other.inchiKey))
-			return false;
-		if (molecularWeight == null) {
-			if (other.molecularWeight != null)
-				return false;
-		} else if (!molecularWeight.equals(other.molecularWeight))
-			return false;
-		if (pdbId == null) {
-			if (other.pdbId != null)
-				return false;
-		} else if (!pdbId.equals(other.pdbId))
-			return false;
-		if (smiles == null) {
-			if (other.smiles != null)
-				return false;
-		} else if (!smiles.equals(other.smiles))
-			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
@@ -287,5 +275,6 @@ public class Ligand {
 			return false;
 		return true;
 	}
+
 
 }
