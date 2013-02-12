@@ -54,6 +54,9 @@ public class PDBRecord {
 	private Double resolution = -1.0;
 	private int numberOfResidues = -1;
 	private int numberOfAtoms = -1;
+	/**
+	 * The Ligands identified by PDB REST
+	 */
 	private List<Ligand> ligands = null;
 
 	public PDBRecord(String aPdbid) {
@@ -111,8 +114,9 @@ public class PDBRecord {
 							.getTextContent();
 					smiles = e.getElementsByTagName("smiles").item(0)
 							.getTextContent();
-					Ligand l = new Ligand(this.getPdbId(), chemicalId, type,
-							mw, chemicalName, formula, inchiKey, inchi, smiles);
+					Ligand l = new Ligand(chemicalId, type,
+							mw, chemicalName, formula, inchiKey, inchi, smiles, "");
+					l.addPdbId(aPdbid);
 					rm.add(l);
 				}
 			}
@@ -240,6 +244,8 @@ public class PDBRecord {
 	}
 
 	/**
+	 * 
+	 * The Ligands identified by PDB REST service
 	 * @return the ligands
 	 */
 	public List<Ligand> getLigands() {

@@ -20,12 +20,15 @@
  */
 package org.semanticscience.PDBAptamerRetriever.lib;
 
+import java.util.ArrayList;
+import java.util.List;
+//TODO: use REST to get the list of pdbids for a given ligand
 /**
  * @author Jose Cruz-Toledo
  * 
  */
 public class Ligand {
-	private String pdbId = null;
+	private List<String> pdbIds = null;
 	private String chemicalId = null;
 	private String type = null;
 	private Double molecularWeight = 0.0;
@@ -33,11 +36,13 @@ public class Ligand {
 	private String formula = null;
 	private String inchiKey = null;
 	private String inchi = null;
+	private String chebiId = null;
 	private String smiles = null;
+	private boolean isION = false;
+	
 
+	
 	/**
-	 * @param pdbId
-	 *            the pdb id
 	 * @param chemicalId
 	 *            the chemical identifier provided by ligandexpo
 	 * @param type
@@ -55,20 +60,28 @@ public class Ligand {
 	 * @param smiles
 	 *            a smiles string
 	 */
-	public Ligand(String pdbId, String chemicalId, String type,
+	public Ligand(String chemicalId, String type,
 			Double molecularWeight, String chemicalName, String formula,
-			String inchiKey, String inchi, String smiles) {
-		super();
-		this.pdbId = pdbId;
+			String inchiKey, String inchi, String smiles, String aChebiId, boolean anIsION) {
+		this(chemicalId, type, molecularWeight, chemicalName, formula, inchiKey, inchi, smiles, aChebiId);
+		this.isION = anIsION;
+	}
+	
+	public Ligand(String chemicalId, String type,
+			Double molecularWeight, String chemicalName, String formula,
+			String inchiKey, String inchi, String smiles, String chebiId){
 		this.chemicalId = chemicalId;
 		this.type = type;
+		this.chebiId = chebiId;
 		this.molecularWeight = molecularWeight;
 		this.chemicalName = chemicalName;
 		this.formula = formula;
 		this.inchiKey = inchiKey;
 		this.inchi = inchi;
 		this.smiles = smiles;
+		this.pdbIds = new ArrayList<String>();
 	}
+	
 	public String getCSVHeader(){
 		String b ="";
 		b += "PDBID\tCHEMICAL ID\tCHEMICAL NAME\tTYPE\tMW\tFORMULA\tINCHI\tINCHIKEY\tSMILES\n";
@@ -76,25 +89,17 @@ public class Ligand {
 	}
 	public String getCSVLine() {
 		String b = "";
-		b += getPdbId() + "\t" + getChemicalId() + "\t"
+		b += getPdbIds() + "\t" + getChemicalId() + "\t"
 				+ getChemicalName().replaceAll(",", "") + "\t" + getType()
 				+"\t"+getMolecularWeight()+"\t"+getFormula()+"\t"+getSmiles()+"\n";
 		return b;
 	}
-
 	/**
-	 * @return the pdbId
+	 * Retrieve a list of all known pdbIds where this ligand is found
+	 * @return a list of pdbids
 	 */
-	public String getPdbId() {
-		return pdbId;
-	}
-
-	/**
-	 * @param pdbId
-	 *            the pdbId to set
-	 */
-	private void setPdbId(String pdbId) {
-		this.pdbId = pdbId;
+	public List<String> getPdbIds(){
+		return this.pdbIds;
 	}
 
 	/**
@@ -105,13 +110,27 @@ public class Ligand {
 	}
 
 	/**
-	 * @param chemicalId
-	 *            the chemicalId to set
+	 * Adds a PDB id to the list of PDB ids for this ligand. 
+	 * Returns true if added to the list. False if it was already in the list
+	 * @param aPdbId a pdb id that you wish to add
+	 * @return true if added to the list. False if it was already in the list
 	 */
-	private void setChemicalId(String chemicalId) {
-		this.chemicalId = chemicalId;
+	public boolean addPdbId(String aPdbId){
+		//check if the PDB ID is in the list
+		if(this.getPdbIds().contains(aPdbId)){
+			return false;
+		}else{
+			pdbIds.add(aPdbId);
+			return true;
+		}
+		
 	}
-
+	public void setIsION(boolean anIsION){
+		this.isION = anIsION;
+	}
+	public boolean isION(){
+		return isION;
+	}
 	/**
 	 * @return the type
 	 */
@@ -119,13 +138,7 @@ public class Ligand {
 		return type;
 	}
 
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	private void setType(String type) {
-		this.type = type;
-	}
+
 
 	/**
 	 * @return the molecularWeight
@@ -134,13 +147,7 @@ public class Ligand {
 		return molecularWeight;
 	}
 
-	/**
-	 * @param molecularWeight
-	 *            the molecularWeight to set
-	 */
-	private void setMolecularWeight(Double molecularWeight) {
-		this.molecularWeight = molecularWeight;
-	}
+	
 
 	/**
 	 * @return the chemicalName
@@ -149,13 +156,6 @@ public class Ligand {
 		return chemicalName;
 	}
 
-	/**
-	 * @param chemicalName
-	 *            the chemicalName to set
-	 */
-	private void setChemicalName(String chemicalName) {
-		this.chemicalName = chemicalName;
-	}
 
 	/**
 	 * @return the formula
@@ -164,13 +164,6 @@ public class Ligand {
 		return formula;
 	}
 
-	/**
-	 * @param formula
-	 *            the formula to set
-	 */
-	private void setFormula(String formula) {
-		this.formula = formula;
-	}
 
 	/**
 	 * @return the inchiKey
@@ -179,13 +172,7 @@ public class Ligand {
 		return inchiKey;
 	}
 
-	/**
-	 * @param inchiKey
-	 *            the inchiKey to set
-	 */
-	private void setInchiKey(String inchiKey) {
-		this.inchiKey = inchiKey;
-	}
+	
 
 	/**
 	 * @return the inchi
@@ -195,38 +182,12 @@ public class Ligand {
 	}
 
 	/**
-	 * @param inchi
-	 *            the inchi to set
-	 */
-	private void setInchi(String inchi) {
-		this.inchi = inchi;
-	}
-
-	/**
 	 * @return the smiles
 	 */
 	public String getSmiles() {
 		return smiles;
 	}
 
-	/**
-	 * @param smiles
-	 *            the smiles to set
-	 */
-	private void setSmiles(String smiles) {
-		this.smiles = smiles;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Ligand [pdbId=" + pdbId + ", chemicalId=" + chemicalId
-				+ ", type=" + type + ", molecularWeight=" + molecularWeight
-				+ ", chemicalName=" + chemicalName + ", formula=" + formula
-				+ ", inchiKey=" + inchiKey + ", inchi=" + inchi + ", smiles="
-				+ smiles + "]";
-	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -239,15 +200,19 @@ public class Ligand {
 		result = prime * result
 				+ ((chemicalName == null) ? 0 : chemicalName.hashCode());
 		result = prime * result + ((formula == null) ? 0 : formula.hashCode());
+		result = prime * result
+				+ ((molecularWeight == null) ? 0 : molecularWeight.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		
+		if (this == obj)
+			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
@@ -268,6 +233,11 @@ public class Ligand {
 				return false;
 		} else if (!formula.equals(other.formula))
 			return false;
+		if (molecularWeight == null) {
+			if (other.molecularWeight != null)
+				return false;
+		} else if (!molecularWeight.equals(other.molecularWeight))
+			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
@@ -275,6 +245,19 @@ public class Ligand {
 			return false;
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Ligand [pdbIds=" + pdbIds + ", chemicalId=" + chemicalId
+				+ ", type=" + type + ", molecularWeight=" + molecularWeight
+				+ ", chemicalName=" + chemicalName + ", formula=" + formula
+				+ ", inchiKey=" + inchiKey + ", inchi=" + inchi + ", chebiId="
+				+ chebiId + ", smiles=" + smiles + ", isION=" + isION + "]";
+	}
+
 
 
 }

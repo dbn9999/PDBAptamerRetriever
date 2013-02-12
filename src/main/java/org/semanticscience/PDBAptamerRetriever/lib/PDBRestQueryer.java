@@ -96,12 +96,6 @@ public class PDBRestQueryer {
 		return xmlQuery;
 	}
 
-	/**
-	 * @param xmlQuery the xmlQuery to set
-	 */
-	private void setXmlQuery(String xmlQuery) {
-		this.xmlQuery = xmlQuery;
-	}
 
 	/**
 	 * @return the pdbIds
@@ -110,12 +104,7 @@ public class PDBRestQueryer {
 		return pdbIds;
 	}
 
-	/**
-	 * @param pdbIds the pdbIds to set
-	 */
-	private void setPdbIds(List<String> pdbIds) {
-		this.pdbIds = pdbIds;
-	}
+	
 
 	
 }
