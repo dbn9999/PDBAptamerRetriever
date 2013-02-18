@@ -50,6 +50,7 @@ public class RetrieveAptamers {
 		boolean concatFasta = false;
 		File fastaDir = null;
 		File pdbDir = null;
+		File clickOutputDir = null;
 		boolean ligandReport = false;
 		boolean ligandFreqs = false;
 		try {
@@ -93,6 +94,9 @@ public class RetrieveAptamers {
 			}
 			if (cmd.hasOption("pdbDir")) {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
+			}
+			if(cmd.hasOption("click")){
+				clickOutputDir = new File(cmd.getOptionValue("click"));
 			}
 			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
 			
@@ -138,6 +142,10 @@ public class RetrieveAptamers {
 						if (b) {
 							System.out
 									.println("PDB files downloaded successfully!");
+							//now check if click was selected 
+							if(clickOutputDir != null){
+								prr.runClick(pdbDir, clickOutputDir, new File(clickOutputDir.getAbsolutePath()+"/summary.csv"));
+							}
 						} else {
 							System.out
 									.println("PDB files could not be downloaded");
@@ -203,6 +211,11 @@ public class RetrieveAptamers {
 				.hasArg(false)
 				.withDescription("Add this parameter to compute ligand counts")
 				.create("lf");
+		Option click = OptionBuilder
+				.withArgName("/path/to/click/outputDir")
+				.hasArg(true)
+				.withDescription("Add this parameter to run Click on all PDB files. Specify where to store the output of Click")
+				.create("click");
 
 		o.addOption(help);
 		o.addOption(expMethod);
@@ -212,6 +225,7 @@ public class RetrieveAptamers {
 		o.addOption(outputPDBDir);
 		o.addOption(ligandReport);
 		o.addOption(ligandFreqs);
+		o.addOption(click);
 		return o;
 	}
 
@@ -222,7 +236,7 @@ public class RetrieveAptamers {
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
-			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDir";
+			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirclick";
 
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;

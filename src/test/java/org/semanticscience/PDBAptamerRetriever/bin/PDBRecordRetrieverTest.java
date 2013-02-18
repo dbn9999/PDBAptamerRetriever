@@ -53,5 +53,12 @@ public class PDBRecordRetrieverTest {
 	public void testingGetLigandFreqs() {
 		assertNotNull(prr.getLigandFrequenciesCSV());
 	}
+	
+	@Test
+	public void testingChoose(){
+		Double d = prr.choose(56, 2);
+		Double e = 1540.0;
+		assertEquals(e, d);
+	}
 
 }

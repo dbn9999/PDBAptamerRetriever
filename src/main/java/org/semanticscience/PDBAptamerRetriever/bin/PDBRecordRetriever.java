@@ -20,14 +20,18 @@
  */
 package org.semanticscience.PDBAptamerRetriever.bin;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.semanticscience.PDBAptamerRetriever.lib.Ligand;
 import org.semanticscience.PDBAptamerRetriever.lib.PDBRecord;
+import org.semanticscience.click_runner.Click;
 
 /**
  * @author Jose Cruz-Toledo
@@ -104,5 +108,52 @@ public class PDBRecordRetriever {
 			rm += l.getChemicalId() + "\t" + count + "\n";
 		}
 		return rm;
+	}
+
+	/**
+	 * Execute click on a directory of PDB files
+	 * 
+	 * @param pdbDir
+	 *            a directory with PDB files
+	 * @param anOutputDirectory
+	 *            a directory where the output of click will be stored
+	 * @param csvSummary
+	 *            the name of the output CSV file with the summary results for
+	 *            running click
+	 */
+	public void runClick(File pdbDir, File anOutputDirectory, File csvSummary) {
+		if (anOutputDirectory != null) {
+			String[] ext = new String[] { "pdb" };
+			Collection<File> cf = FileUtils.listFiles(pdbDir, ext, false);
+			System.out.println("Running Click on " + cf.size()
+					+ " pdb files...");
+			System.out.println("Performing " + choose(cf.size(), 2)
+					+ " comparisons with Click ...");
+			try {
+				Click.compareAAADirectory(pdbDir, anOutputDirectory, csvSummary);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Compute x choose y using (x!/((x-y)!*y!)
+	 * @param x
+	 * @param y
+	 * @return the number of xCy combinations
+	 */
+	public double choose(int x, int y) {
+		if (y < 0 || y > x)
+			return 0;
+		if (y > x / 2) {
+			y = x - y;
+		}
+		double denominator = 1.0, numerator = 1.0;
+		for (int i = 1; i <= y; i++) {
+			denominator *= i;
+			numerator *= (x + 1 - i);
+		}
+		return numerator / denominator;
 	}
 }
