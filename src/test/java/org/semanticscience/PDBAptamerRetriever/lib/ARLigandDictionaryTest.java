@@ -72,4 +72,15 @@ public class ARLigandDictionaryTest {
 		}
 		assertFalse(b);
 	}
+	
+	@Test
+	public void testFindInDictionary(){
+		List<Ligand> l = arld.findInDictionary("1y27");
+		System.out.println(l);
+		boolean b = true;
+		if(l.size() > 0 ){
+			b = false;
+		}
+		assertFalse(b);
+	}
 }

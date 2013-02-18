@@ -70,17 +70,24 @@ public class ARLigandDictionary {
 		// now add the list of pdbids to our ligands
 		processLig2PDBMap(ligToPdb);
 	}
-	
-	public Map<String, List<Ligand>> findInDictionary(List<String> aPdbIdList){
-		return null;
-	}
+
 	/**
-	 * Retrieves the list of Ligands found in ligands.csv that are associated with the input parameter
+	 * Retrieves the list of Ligands found in ligands.csv that are associated
+	 * with the input parameter
 	 * 
 	 * @param aPdbId
 	 * @return
 	 */
-	public List<Ligand> findInDictionary(String aPdbId){
+	public List<Ligand> findInDictionary(String aPdbId) {
+		if(aPdbId.length() > 0){
+			List<Ligand> rm = new ArrayList<Ligand>();
+			for (Ligand l : this.ligands) {
+				if(l.getPdbIds().contains(aPdbId.toLowerCase())){
+					rm.add(l);
+				}
+			}
+			return rm;
+		}
 		return null;
 	}
 
