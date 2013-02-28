@@ -4,7 +4,7 @@
 
 	<groupId>org.semanticscience</groupId>
 	<artifactId>PDBAptamerRetriever</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
 	<packaging>jar</packaging>
 
 	<name>PDBAptamerRetriever</name>
@@ -49,6 +49,11 @@
 			<groupId>org.semanticscience</groupId>
 			<artifactId>click-runner</artifactId>
 			<version>0.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticscience</groupId>
+			<artifactId>needlerunner</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

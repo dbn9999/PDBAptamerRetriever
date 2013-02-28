@@ -6,4 +6,4 @@ Create a runnable jar by executing
 $mvn assembly:assembly
 
 Inside of the target directory you will find a jar file:
-PDBAptamerRetriever-0.0.6-jar-with-dependencies.jar
+PDBAptamerRetriever-0.0.7-jar-with-dependencies.jar

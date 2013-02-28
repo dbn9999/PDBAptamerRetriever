@@ -51,6 +51,9 @@ public class RetrieveAptamers {
 		File fastaDir = null;
 		File pdbDir = null;
 		File clickOutputDir = null;
+		File needleOutputDir = null;
+		Double gapExtend = null;
+		Double gapOpen = null;
 		boolean ligandReport = false;
 		boolean ligandFreqs = false;
 		try {
@@ -89,24 +92,67 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("lr")) {
 				ligandReport = true;
 			}
-			if(cmd.hasOption("lf")){
+			if (cmd.hasOption("lf")) {
 				ligandFreqs = true;
 			}
 			if (cmd.hasOption("pdbDir")) {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
 			}
-			if(cmd.hasOption("click")){
+			if (cmd.hasOption("click")) {
 				clickOutputDir = new File(cmd.getOptionValue("click"));
 			}
+			if (cmd.hasOption("needle")) {
+				needleOutputDir = new File(cmd.getOptionValue("needle"));
+				if (cmd.hasOption("gapOpen") && cmd.hasOption("gapExtend")) {
+					gapExtend = Double.parseDouble(cmd
+							.getOptionValue("gapExtend"));
+					gapOpen = Double.parseDouble(cmd.getOptionValue("gapOpen"));
+				} else {
+					System.out
+							.println("You did not specify gap open and/or gap extend penalties!");
+					printUsage();
+					System.exit(1);
+				}
+			}
+			// check that pdbDir and fastaDir are empty
+			if (fastaDir != null) {
+				if (fastaDir.isDirectory()) {
+					if (fastaDir.list().length > 0) {
+						System.out
+								.println("The FASTA directory you selected is not empty! \n Please provide a path to an empty directory!");
+						printUsage();
+						System.exit(1);
+					}
+				} else {
+					System.out
+							.println("Invalid directory selected for fastaDir!");
+					printUsage();
+					System.exit(1);
+				}
+			}
+			if (pdbDir != null) {
+				if (pdbDir.isDirectory()) {
+					if (pdbDir.list().length > 0) {
+						System.out
+								.println("The PDB directory you selected is not empty! \n Please provide a path to an empty directory!");
+						printUsage();
+						System.exit(1);
+					}
+				} else {
+					System.out
+							.println("Invalid directory selected for pdbDir!");
+					printUsage();
+					System.exit(1);
+				}
+			}
 			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
-			
 			if (par.getPdbids().size() > 0) {
 				System.out.println("Fetching Data from PDB ...");
 				PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
 				// now write the CSV file
-				File csv = new File("summary.csv");
+				File csv = new File("pdb-record-summary.csv");
 				FileUtils.writeStringToFile(csv, prr.getCSVString());
-				System.out.println("summary.csv successfully created!");
+				System.out.println("pdb-record-summary successfully created!");
 				// verify the options
 				if (ligandReport) {
 					// create the ligand report
@@ -116,7 +162,7 @@ public class RetrieveAptamers {
 					System.out
 							.println("ligand-report.csv successfully created!");
 				}
-				if(ligandFreqs){
+				if (ligandFreqs) {
 					File lf = new File("ligand-freqs.csv");
 					String ligCounts = prr.getLigandFrequenciesCSV();
 					FileUtils.writeStringToFile(lf, ligCounts);
@@ -128,6 +174,18 @@ public class RetrieveAptamers {
 						if (b) {
 							System.out
 									.println("FASTA files downloaded successfully!");
+							if (needleOutputDir != null) {
+								System.out.println("Running Needle on "
+										+ fastaDir.listFiles().length
+										+ " files...");
+								prr.runNeedle(
+										fastaDir,
+										needleOutputDir,
+										new File(needleOutputDir
+												.getAbsolutePath()
+												+ "/summary.csv"), gapOpen,
+										gapExtend);
+							}
 						} else {
 							System.out
 									.println("FASTA files could not be downloaded");
@@ -142,9 +200,11 @@ public class RetrieveAptamers {
 						if (b) {
 							System.out
 									.println("PDB files downloaded successfully!");
-							//now check if click was selected 
-							if(clickOutputDir != null){
-								prr.runClick(pdbDir, clickOutputDir, new File(clickOutputDir.getAbsolutePath()+"/summary.csv"));
+							// now check if click was selected
+							if (clickOutputDir != null) {
+								prr.runClick(pdbDir, clickOutputDir, new File(
+										clickOutputDir.getAbsolutePath()
+												+ "/summary.csv"));
 							}
 						} else {
 							System.out
@@ -154,8 +214,8 @@ public class RetrieveAptamers {
 						e.printStackTrace();
 					}
 				}
-			}//if pdbids found
-			else{
+			}// if pdbids found
+			else {
 				System.out.println("No PDB records found!");
 				System.exit(1);
 			}
@@ -207,16 +267,33 @@ public class RetrieveAptamers {
 				.hasArg(false)
 				.withDescription("Add this parameter to create a ligand report")
 				.create("lr");
-		Option ligandFreqs = OptionBuilder
-				.hasArg(false)
+		Option ligandFreqs = OptionBuilder.hasArg(false)
 				.withDescription("Add this parameter to compute ligand counts")
 				.create("lf");
 		Option click = OptionBuilder
 				.withArgName("/path/to/click/outputDir")
 				.hasArg(true)
-				.withDescription("Add this parameter to run Click on all PDB files. Specify where to store the output of Click")
+				.withDescription(
+						"Add this parameter to run Click on all PDB files. Specify where to store the output of Click")
 				.create("click");
-
+		Option needle = OptionBuilder
+				.withArgName("/path/to/needle/outputDir")
+				.hasArg(true)
+				.withDescription(
+						"Add this parameter to run EMBOSS's needle program on the downloaded fasta files")
+				.create("needle");
+		Option gapOpen = OptionBuilder
+				.withArgName("Gap open penalty")
+				.hasArg(true)
+				.withDescription("Add this parameter if you are running Needle")
+				.create("gapOpen");
+		Option gapExtend = OptionBuilder
+				.withArgName("Gap extend penalty")
+				.hasArg(true)
+				.withDescription("Add this parameter if you are running Needle")
+				.create("gapExtend");
+		o.addOption(gapExtend);
+		o.addOption(gapOpen);
 		o.addOption(help);
 		o.addOption(expMethod);
 		o.addOption(moleculeType);
@@ -226,6 +303,7 @@ public class RetrieveAptamers {
 		o.addOption(ligandReport);
 		o.addOption(ligandFreqs);
 		o.addOption(click);
+		o.addOption(needle);
 		return o;
 	}
 
@@ -236,7 +314,7 @@ public class RetrieveAptamers {
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
-			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirclick";
+			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirclickneedlegapOpengapExtend";
 
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;

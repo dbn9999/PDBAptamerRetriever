@@ -25,8 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -192,13 +194,22 @@ public class PDBAptamerIDRetriever {
 							URL u = new URL(base + pdbid);
 							in = u.openStream();
 							String fasta = IOUtils.toString(in);
+
 							if (fasta.length() > 0) {
 								// now create a file from a string
 								if (concatenate == false) {
-									File f = new File(aDirectory.getPath()
-											+ "/" + pdbid + ".fasta");
-									FileUtils.writeStringToFile(f, fasta);
-									checkCount++;
+									// check if the file has more than one
+									// sequence
+									Map<String, String> seqMap = separateFasta(fasta);
+									if(seqMap.size()>0){
+										for (String pdbIdChainId : seqMap.keySet()) {
+											File f = new File(aDirectory.getPath()
+													+ "/" + pdbIdChainId + ".fasta");
+												FileUtils.writeStringToFile(f, seqMap.get(pdbIdChainId));
+										}
+										checkCount++;
+									}
+									
 								} else {
 									FileUtils.writeStringToFile(concatOut,
 											fasta, true);
@@ -230,6 +241,37 @@ public class PDBAptamerIDRetriever {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Takes in a FASTA file with multiple sequences and separates it into a map
+	 * where the key is the PDB:CHAINID and the value is the FASTA
+	 * 
+	 * @param aFasta
+	 *            a string representation of a FASTA file
+	 * @return a Map where the key is the PDB:CHAINID and the value is the FASTA
+	 *         (id line and sequence lines)
+	 */
+	public Map<String, String> separateFasta(String aFasta) {
+		if (aFasta.length() > 0) {
+			Map<String, String> rm = new HashMap<String, String>();
+			String[] f = aFasta.split(">");
+			if (f.length > 0) {
+				for (int i = 0; i < f.length; i++) {
+					if (f[i].length() > 0) {
+						//get the pdbid:Chainid
+						String []tmp= f[i].split("\\|");
+						String idChain = tmp[0];
+						String [] p = idChain.split("\\:");
+						String pdbidchain = p[0]+"-"+p[1];
+						String aFastaStr = ">" + f[i];
+						rm.put(pdbidchain, aFastaStr);
+					}
+				}
+			return rm;
+			}
+		}
+		return null;
 	}
 
 	private String constructXMLQuery(String anAptamerType, String anExpType) {
@@ -356,7 +398,6 @@ public class PDBAptamerIDRetriever {
 	public String getExperimentalType() {
 		return experimentalType;
 	}
-
 
 	/**
 	 * @return the hasLigands

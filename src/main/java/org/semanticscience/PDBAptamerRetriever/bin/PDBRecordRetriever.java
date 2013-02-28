@@ -32,6 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.semanticscience.PDBAptamerRetriever.lib.Ligand;
 import org.semanticscience.PDBAptamerRetriever.lib.PDBRecord;
 import org.semanticscience.click_runner.Click;
+import org.semanticscience.needlerunner.Needle;
 
 /**
  * @author Jose Cruz-Toledo
@@ -124,14 +125,22 @@ public class PDBRecordRetriever {
 	public void runClick(File pdbDir, File anOutputDirectory, File csvSummary) {
 		if (anOutputDirectory != null) {
 			String[] ext = new String[] { "pdb" };
-			Collection<File> cf = FileUtils.listFiles(pdbDir, ext, false);
-			System.out.println("Running Click on " + cf.size()
-					+ " pdb files...");
-			System.out.println("Performing " + choose(cf.size(), 2)
-					+ " comparisons with Click ...");
+			System.out.println("Running click...");
 			try {
 				Click.compareAAADirectory(pdbDir, anOutputDirectory, csvSummary);
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void runNeedle(File fastaDir, File anOutputdir, File csvSummary, Double aGapOpen, Double aGapExt){
+		if(anOutputdir != null){
+			String [] ext = new String[]{"fasta"};
+			try{
+				Needle.compareAAADirectory(fastaDir, anOutputdir, csvSummary, aGapOpen, aGapExt);
+				Needle.cleanCSVSummary(csvSummary, new File(anOutputdir+"/averaged_scores.csv"));
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
