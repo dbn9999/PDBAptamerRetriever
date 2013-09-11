@@ -1,5 +1,10 @@
-.project
-.metadata
-.classpath
-.settings/
-target/
+*.class
+*target*
+*.pdb
+*.dat
+*.ps
+*.log
+# Package Files #
+*.jar
+*.war
+*.ear
