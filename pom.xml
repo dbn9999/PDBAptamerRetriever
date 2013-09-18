@@ -71,7 +71,6 @@
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-
 					<artifactId>maven-assembly-plugin</artifactId>
 					<configuration>
 						<archive>
@@ -87,14 +86,13 @@
 					<executions>
 						<execution>
 							<id>make-my-jar-with-dependencies</id>
-							<phase>package</phase>
+							<phase>install</phase>
 							<goals>
 								<goal>single</goal>
 							</goals>
 						</execution>
 					</executions>
 				</plugin>
-
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>

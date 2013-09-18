@@ -113,44 +113,39 @@ public class PDBAptamerIDRetriever {
 	public boolean retrievePDB(File aDirectory) throws Exception {
 		int checkCount = 0;
 		if (aDirectory.isDirectory()) {
-			if (isDirEmpty(aDirectory)) {
-				String base = "http://www.rcsb.org/pdb/files/";
-				if (getPdbids().size() >= 1) {
-					System.out.println("Retrieving " + getPdbids().size()
-							+ " PDB files...");
-					// iterate over the pdbids
-					Iterator<String> itr = getPdbids().iterator();
-					while (itr.hasNext()) {
-						InputStream in = null;
-						try {
-							String pdbid = itr.next();
-							URL u = new URL(base + pdbid + ".pdb");
-							in = u.openStream();
-							String pdb = IOUtils.toString(in);
-							if (pdb.length() > 0) {
-								// now create a file from a string
-								File f = new File(aDirectory.getPath() + "/"
-										+ pdbid + ".pdb");
-								FileUtils.writeStringToFile(f, pdb);
-								checkCount++;
-							}
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-							return false;
-						} catch (IOException e) {
-							e.printStackTrace();
-							return false;
-						} finally {
-							IOUtils.closeQuietly(in);
+			
+			String base = "http://www.rcsb.org/pdb/files/";
+			if (getPdbids().size() >= 1) {
+				System.out.println("Retrieving " + getPdbids().size()
+						+ " PDB files...");
+				// iterate over the pdbids
+				Iterator<String> itr = getPdbids().iterator();
+				while (itr.hasNext()) {
+					InputStream in = null;
+					try {
+						String pdbid = itr.next();
+						URL u = new URL(base + pdbid + ".pdb");
+						in = u.openStream();
+						String pdb = IOUtils.toString(in);
+						if (pdb.length() > 0) {
+							// now create a file from a string
+							File f = new File(aDirectory.getPath() + "/"
+									+ pdbid + ".pdb");
+							FileUtils.writeStringToFile(f, pdb);
+							checkCount++;
 						}
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return false;
+					} finally {
+						IOUtils.closeQuietly(in);
 					}
 				}
-			} else {
-				throw new Exception("PDB output directory : "
-						+ aDirectory.getAbsolutePath()
-						+ " is not empty!\nPlease provide an empty directory!");
-
 			}
+
 		} else {
 			return false;
 		}
@@ -201,15 +196,19 @@ public class PDBAptamerIDRetriever {
 									// check if the file has more than one
 									// sequence
 									Map<String, String> seqMap = separateFasta(fasta);
-									if(seqMap.size()>0){
-										for (String pdbIdChainId : seqMap.keySet()) {
-											File f = new File(aDirectory.getPath()
-													+ "/" + pdbIdChainId + ".fasta");
-												FileUtils.writeStringToFile(f, seqMap.get(pdbIdChainId));
+									if (seqMap.size() > 0) {
+										for (String pdbIdChainId : seqMap
+												.keySet()) {
+											File f = new File(
+													aDirectory.getPath() + "/"
+															+ pdbIdChainId
+															+ ".fasta");
+											FileUtils.writeStringToFile(f,
+													seqMap.get(pdbIdChainId));
 										}
 										checkCount++;
 									}
-									
+
 								} else {
 									FileUtils.writeStringToFile(concatOut,
 											fasta, true);
@@ -259,16 +258,16 @@ public class PDBAptamerIDRetriever {
 			if (f.length > 0) {
 				for (int i = 0; i < f.length; i++) {
 					if (f[i].length() > 0) {
-						//get the pdbid:Chainid
-						String []tmp= f[i].split("\\|");
+						// get the pdbid:Chainid
+						String[] tmp = f[i].split("\\|");
 						String idChain = tmp[0];
-						String [] p = idChain.split("\\:");
-						String pdbidchain = p[0]+"-"+p[1];
+						String[] p = idChain.split("\\:");
+						String pdbidchain = p[0] + "-" + p[1];
 						String aFastaStr = ">" + f[i];
 						rm.put(pdbidchain, aFastaStr);
 					}
 				}
-			return rm;
+				return rm;
 			}
 		}
 		return null;

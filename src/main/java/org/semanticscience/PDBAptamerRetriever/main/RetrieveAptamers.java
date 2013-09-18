@@ -131,14 +131,7 @@ public class RetrieveAptamers {
 				}
 			}
 			if (pdbDir != null) {
-				if (pdbDir.isDirectory()) {
-					if (pdbDir.list().length > 0) {
-						System.out
-								.println("The PDB directory you selected is not empty! \n Please provide a path to an empty directory!");
-						printUsage();
-						System.exit(1);
-					}
-				} else {
+				if (!pdbDir.isDirectory()) {
 					System.out
 							.println("Invalid directory selected for pdbDir!");
 					printUsage();
@@ -147,20 +140,21 @@ public class RetrieveAptamers {
 			}
 			PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth);
 			if (par.getPdbids().size() > 0) {
+				String workingDir = pdbDir.getAbsolutePath()+"/";
 				System.out.println("Fetching Data from PDB ...");
 				PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
 				// now write the CSV file
-				File csv = new File("pdb-record-summary.csv");
+				File csv = new File(workingDir+"pdb-record-summary.csv");
 				FileUtils.writeStringToFile(csv, prr.getCSVString());
-				System.out.println("pdb-record-summary successfully created!");
+				System.out.println(workingDir+"pdb-record-summary successfully created!");
 				// verify the options
 				if (ligandReport) {
 					// create the ligand report
-					File lr = new File("ligand-report.csv");
+					File lr = new File(workingDir+"ligand-report.csv");
 					String ligRep = prr.getLigandCSVReport();
 					FileUtils.writeStringToFile(lr, ligRep);
 					System.out
-							.println("ligand-report.csv successfully created!");
+							.println(workingDir+"ligand-report.csv successfully created!");
 				}
 				if (ligandFreqs) {
 					File lf = new File("ligand-freqs.csv");
