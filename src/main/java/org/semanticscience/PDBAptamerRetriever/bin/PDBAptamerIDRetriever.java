@@ -101,6 +101,52 @@ public class PDBAptamerIDRetriever {
 	}
 
 	/**
+	 * Retrieve PDBML files for all this.pdbids. Creates the Downloaded PDBML
+	 * files inside adirectory
+	 * 
+	 * @param aDirectory
+	 *            the directory where the pdbml files will be stored
+	 * @return false if error occured
+	 */
+	public boolean retrievePDBML(File aDirectory) {
+		if (aDirectory.isDirectory()) {
+			String base = "http://www.rcsb.org/pdb/files/";
+			if (getPdbids().size() >= 1) {
+				System.out.println("Retrieving " + getPdbids().size()
+						+ " PDBML files...");
+				// iterate over the pdbids
+				Iterator<String> itr = this.getPdbids().iterator();
+				while (itr.hasNext()) {
+					InputStream in = null;
+					try {
+						String pdbid = itr.next();
+						URL u = new URL(base + pdbid + ".xml");
+						in = u.openStream();
+						String pdb = IOUtils.toString(in);
+						if (pdb.length() > 0) {
+							// now create a file from a string
+							File f = new File(aDirectory.getPath() + "/"
+									+ pdbid + ".xml");
+							FileUtils.writeStringToFile(f, pdb);
+						}
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return false;
+					} finally {
+						IOUtils.closeQuietly(in);
+					}
+				}
+			}
+		} else {
+			return false;
+		}
+		return false;
+	}
+
+	/**
 	 * Retrieve PDB files for all pdbids. Creates the downloaded PDB files
 	 * inside aDirectory
 	 * 
@@ -113,13 +159,12 @@ public class PDBAptamerIDRetriever {
 	public boolean retrievePDB(File aDirectory) throws Exception {
 		int checkCount = 0;
 		if (aDirectory.isDirectory()) {
-			
 			String base = "http://www.rcsb.org/pdb/files/";
 			if (getPdbids().size() >= 1) {
 				System.out.println("Retrieving " + getPdbids().size()
 						+ " PDB files...");
 				// iterate over the pdbids
-				Iterator<String> itr = getPdbids().iterator();
+				Iterator<String> itr = this.getPdbids().iterator();
 				while (itr.hasNext()) {
 					InputStream in = null;
 					try {

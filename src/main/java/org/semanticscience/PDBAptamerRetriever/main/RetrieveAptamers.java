@@ -50,6 +50,7 @@ public class RetrieveAptamers {
 		boolean concatFasta = false;
 		File fastaDir = null;
 		File pdbDir = null;
+		File pdbmlDir = null;
 		File clickOutputDir = null;
 		File needleOutputDir = null;
 		Double gapExtend = null;
@@ -98,6 +99,9 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("pdbDir")) {
 				pdbDir = new File(cmd.getOptionValue("pdbDir"));
 			}
+			if(cmd.hasOption("pdbmlDir")){
+				pdbmlDir = new File(cmd.getOptionValue("pdbmlDir"));
+			}
 			if (cmd.hasOption("click")) {
 				clickOutputDir = new File(cmd.getOptionValue("click"));
 			}
@@ -134,6 +138,13 @@ public class RetrieveAptamers {
 				if (!pdbDir.isDirectory()) {
 					System.out
 							.println("Invalid directory selected for pdbDir!");
+					printUsage();
+					System.exit(1);
+				}
+			}
+			if(pdbmlDir != null){
+				if(!pdbmlDir.isDirectory()){
+					System.out.println("Invalid pdbml directory given!");
 					printUsage();
 					System.exit(1);
 				}
@@ -208,6 +219,18 @@ public class RetrieveAptamers {
 						e.printStackTrace();
 					}
 				}
+				if(pdbmlDir != null){
+					try{
+						boolean b = par.retrievePDBML(pdbmlDir);
+						if(b){
+							System.out.println("PDBML files downloaded successfully!");
+						}else{
+							System.out.println("PDBML files could not be downloaded!");
+						}
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+				}
 			}// if pdbids found
 			else {
 				System.out.println("No PDB records found!");
@@ -257,6 +280,11 @@ public class RetrieveAptamers {
 				.withDescription(
 						"The directory where you wish to save your PDB files")
 				.create("pdbDir");
+		Option outputPDBMLDir = OptionBuilder
+				.withArgName("/path/to/loca/pdbml/dir")
+				.hasArg(true)
+				.withDescription("The directory where you wish to save your PDBML files")
+				.create("pdbmlDir");
 		Option ligandReport = OptionBuilder
 				.hasArg(false)
 				.withDescription("Add this parameter to create a ligand report")
@@ -286,6 +314,7 @@ public class RetrieveAptamers {
 				.hasArg(true)
 				.withDescription("Add this parameter if you are running Needle")
 				.create("gapExtend");
+		o.addOption(outputPDBMLDir);
 		o.addOption(gapExtend);
 		o.addOption(gapOpen);
 		o.addOption(help);
@@ -308,8 +337,7 @@ public class RetrieveAptamers {
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
-			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirclickneedlegapOpengapExtend";
-
+			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirpdbmlDirclickneedlegapOpengapExtend";
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;
 				Option opt2 = (Option) o2;
