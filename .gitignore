@@ -4,6 +4,7 @@
 *.dat
 *.ps
 *.log
+*.csv
 # Package Files #
 *.jar
 *.war
