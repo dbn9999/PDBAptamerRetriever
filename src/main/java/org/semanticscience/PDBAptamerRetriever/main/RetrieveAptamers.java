@@ -261,7 +261,7 @@ public class RetrieveAptamers {
 				.withArgName("RNA")
 				.hasArg(true)
 				.withDescription(
-						"Enter a molecule type. Valid options are DNA, RNA or BOTH")
+						"Enter a molecule type. Valid options are DNA, RNA, BOTH, ALLDNA or ALLRNA")
 				.isRequired().create("mt");
 		Option outputFastaDir = OptionBuilder
 				.withArgName("/path/to/local/dir")
@@ -359,7 +359,7 @@ public class RetrieveAptamers {
 
 	private static boolean validateMolType(String aMolType) {
 		if (aMolType.equals("DNA") || aMolType.equals("RNA")
-				|| aMolType.equals("BOTH")) {
+				|| aMolType.equals("BOTH") || aMolType.equals("ALLRNA") || aMolType.equals("ALLDNA")) {
 			return true;
 		}
 		return false;
