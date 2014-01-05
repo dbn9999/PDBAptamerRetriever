@@ -57,8 +57,13 @@ public class RetrieveAptamersTest {
 	
 	@Test
 	public void test2() {
-	  String [] args = new String [] {"-getall", "-pdbDir", "/tmp/pdb","-em", "X-RAY", "-mt", "RNA"};
+	  String [] args = new String [] {"-getall", "-pdbDir", "/tmp/pdb/dna/pdb","-em", "X-RAY", "-mt", "DNA","-pdbmlDir", "/tmp/pdb/dna/pdbml"};
 		RetrieveAptamers.main(args);
-		
+	}
+	
+	@Test
+	public void test3() {
+	  String [] args = new String [] {"-getall", "-pdbDir", "/tmp/pdb/rna/pdb","-em", "X-RAY", "-mt", "RNA","-pdbmlDir", "/tmp/pdb/rna/pdbml"};
+		RetrieveAptamers.main(args);
 	}
 }
