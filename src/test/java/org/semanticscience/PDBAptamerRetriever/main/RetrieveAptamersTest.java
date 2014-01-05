@@ -47,11 +47,18 @@ public class RetrieveAptamersTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	@Test
+	/*@Test
 	public void test() {
 	  String [] args = new String [] {"-em", "X-RAY", "-mt", "DNA", "-lr", "-lf", "-pdbDir", "/home/jose/Documents/research/aptamers_inPDB/pdb_retriever/Nov2013/pdb/dna", "-pdbmlDir", "/home/jose/Documents/research/aptamers_inPDB/pdb_retriever/Nov2013/pdbml/dna"};
 		RetrieveAptamers.main(args);
 		
+	}*/
+	
+	
+	@Test
+	public void test2() {
+	  String [] args = new String [] {"-getall", "-pdbDir", "/tmp/pdb","-em", "X-RAY", "-mt", "RNA"};
+		RetrieveAptamers.main(args);
+		
 	}
-
 }

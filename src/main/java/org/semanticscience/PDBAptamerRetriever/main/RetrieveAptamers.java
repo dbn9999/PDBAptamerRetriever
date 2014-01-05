@@ -63,6 +63,13 @@ public class RetrieveAptamers {
 				printUsage();
 				System.exit(1);
 			}
+			if (cmd.hasOption("pdbDir")) {
+				pdbDir = new File(cmd.getOptionValue("pdbDir"));
+			}
+			if(cmd.hasOption("pdbmlDir")){
+				pdbmlDir = new File(cmd.getOptionValue("pdbmlDir"));
+			}
+			
 			if (cmd.hasOption("em")) {
 				// validate mehtod
 				if (validateExpMethod(cmd.getOptionValue("em"))) {
@@ -83,6 +90,55 @@ public class RetrieveAptamers {
 					System.exit(1);
 				}
 			}
+			
+			if(cmd.hasOption("getall")){
+				//check that you have a set pdb dir
+				if (cmd.hasOption("pdbDir")) {
+					pdbDir = new File(cmd.getOptionValue("pdbDir"));
+					PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth, false, true);
+					if (par.getPdbids().size() > 0) {
+						String workingDir = pdbDir.getAbsolutePath()+"/";
+						System.out.println("Fetching Data from PDB ...");
+						PDBRecordRetriever prr = new PDBRecordRetriever(par.getPdbids());
+						File csv = new File(workingDir+"pdb-record-summary.csv");
+						FileUtils.writeStringToFile(csv, prr.getCSVString());
+						System.out.println(workingDir+"pdb-record-summary successfully created!");
+						if (pdbDir != null) {
+							try {
+								boolean b = par.retrievePDB(pdbDir);
+								if (b) {
+									System.out
+											.println("PDB files downloaded successfully!");
+									
+								} else {
+									System.out
+											.println("PDB files could not be downloaded");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						if(pdbmlDir != null){
+							try{
+								boolean b = par.retrievePDBML(pdbmlDir);
+								if(b){
+									System.out.println("PDBML files downloaded successfully!");
+								}else{
+									System.out.println("PDBML files could not be downloaded!");
+								}
+							}catch (Exception e){
+								e.printStackTrace();
+							}
+						}
+						
+					}
+				}else{
+					System.out.println("Please specify an pdbDir where to download the files");
+					System.exit(1);
+				}
+				
+				System.exit(1);
+			}
 
 			if (cmd.hasOption("fastaDir")) {
 				fastaDir = new File(cmd.getOptionValue("fastaDir"));
@@ -96,12 +152,7 @@ public class RetrieveAptamers {
 			if (cmd.hasOption("lf")) {
 				ligandFreqs = true;
 			}
-			if (cmd.hasOption("pdbDir")) {
-				pdbDir = new File(cmd.getOptionValue("pdbDir"));
-			}
-			if(cmd.hasOption("pdbmlDir")){
-				pdbmlDir = new File(cmd.getOptionValue("pdbmlDir"));
-			}
+			
 			if (cmd.hasOption("click")) {
 				clickOutputDir = new File(cmd.getOptionValue("click"));
 			}
@@ -251,18 +302,22 @@ public class RetrieveAptamers {
 		Options o = new Options();
 		// help option
 		Option help = new Option("help", false, "Print this message");
+		Option getAll = OptionBuilder
+				.hasArg(false)
+				.withDescription("use this flag if you wish to download all rna and dna containing pdb structures both x-ray and nmr")
+				.create("getall");
 		Option expMethod = OptionBuilder
 				.withArgName("X-RAY")
 				.hasArg(true)
 				.withDescription(
 						"Enter an expeirmental method. Valid options are X-RAY, NMR or all")
-				.isRequired().create("em");
+				.create("em");
 		Option moleculeType = OptionBuilder
 				.withArgName("RNA")
 				.hasArg(true)
 				.withDescription(
 						"Enter a molecule type. Valid options are DNA, RNA, BOTH, ALLDNA or ALLRNA")
-				.isRequired().create("mt");
+				.create("mt");
 		Option outputFastaDir = OptionBuilder
 				.withArgName("/path/to/local/dir")
 				.hasArg(true)
@@ -314,6 +369,7 @@ public class RetrieveAptamers {
 				.hasArg(true)
 				.withDescription("Add this parameter if you are running Needle")
 				.create("gapExtend");
+		o.addOption(getAll);
 		o.addOption(outputPDBMLDir);
 		o.addOption(gapExtend);
 		o.addOption(gapOpen);
@@ -337,7 +393,7 @@ public class RetrieveAptamers {
 	private static void printUsage() {
 		HelpFormatter hf = new HelpFormatter();
 		hf.setOptionComparator(new Comparator() {
-			private final String OPTS_ORDER = "helpemmtcflrlffastaDirpdbDirpdbmlDirclickneedlegapOpengapExtend";
+			private final String OPTS_ORDER = "helpgetallemmtcflrlffastaDirpdbDirpdbmlDirclickneedlegapOpengapExtend";
 			public int compare(Object o1, Object o2) {
 				Option opt1 = (Option) o1;
 				Option opt2 = (Option) o2;

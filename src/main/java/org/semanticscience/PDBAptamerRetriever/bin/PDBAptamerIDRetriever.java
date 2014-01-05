@@ -67,6 +67,7 @@ public class PDBAptamerIDRetriever {
 		pdbids = prq.getPdbIds();
 	}
 
+	
 	/**
 	 * 
 	 * @param anAptamerType
@@ -88,6 +89,20 @@ public class PDBAptamerIDRetriever {
 		pdbids = prq.getPdbIds();
 	}
 
+	public PDBAptamerIDRetriever(String aat, String aet, boolean ahl, boolean getall){
+		aptamerType = aat;
+		experimentalType = aet;
+		hasLigands = ahl;
+		if(getall){
+			query = constructGetAllQuery(aat, aet);
+		}else{
+			query = constructXMLQuery(aat, aet, ahl,
+					keywords);
+		}
+		prq = new PDBRestQueryer(query);
+		pdbids = prq.getPdbIds();
+		
+	}
 	public PDBAptamerIDRetriever(String anAptamerType, String anExpType,
 			boolean aHasLigands, String aKeyword) {
 		aptamerType = anAptamerType;
@@ -340,6 +355,26 @@ public class PDBAptamerIDRetriever {
 			buf += "<queryRefinement>";
 			buf += "<conjunctionType>and</conjunctionType>";
 			buf += kw;
+			buf += "</queryRefinement>";
+		}
+		buf += "</orgPdbCompositeQuery>";
+		return buf;
+	}
+	
+	private String constructGetAllQuery(String anAptamerType, String anExpType){
+		String buf = "";
+		String at = makeChainTypeQuery(anAptamerType);
+		String et = makeExperimentalMethodQuery(anExpType);
+		buf +="<orgPdbCompositeQuery>";
+		if (at != null) {
+			buf += "<queryRefinement>";
+			buf += at;
+			buf += "</queryRefinement>";
+		}
+		if (et != null) {
+			buf += "<queryRefinement>";
+			buf += "<conjunctionType>and</conjunctionType>";
+			buf += et;
 			buf += "</queryRefinement>";
 		}
 		buf += "</orgPdbCompositeQuery>";
