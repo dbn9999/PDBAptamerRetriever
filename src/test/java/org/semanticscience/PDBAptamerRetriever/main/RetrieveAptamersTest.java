@@ -55,11 +55,11 @@ public class RetrieveAptamersTest {
 	}*/
 	
 	
-	@Test
+	/*@Test
 	public void test2() {
 	  String [] args = new String [] {"-getall", "-pdbDir", "/tmp/pdb/dna/pdb","-em", "X-RAY", "-mt", "DNA","-pdbmlDir", "/tmp/pdb/dna/pdbml"};
 		RetrieveAptamers.main(args);
-	}
+	}*/
 	
 	@Test
 	public void test3() {

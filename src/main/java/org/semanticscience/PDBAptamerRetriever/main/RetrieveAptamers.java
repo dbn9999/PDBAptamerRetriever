@@ -93,7 +93,7 @@ public class RetrieveAptamers {
 			
 			if(cmd.hasOption("getall")){
 				//check that you have a set pdb dir
-				if (cmd.hasOption("pdbDir")) {
+				if (cmd.hasOption("pdbDir") || cmd.hasOption("pdbmlDir")) {
 					pdbDir = new File(cmd.getOptionValue("pdbDir"));
 					PDBAptamerIDRetriever par = new PDBAptamerIDRetriever(molT, expMeth, false, true);
 					if (par.getPdbids().size() > 0) {
